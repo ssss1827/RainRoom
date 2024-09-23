@@ -9,7 +9,7 @@ const PhaserContainer = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 0; /* Phaser 캔버스를 UI 요소 아래에 배치 */
+  z-index: 0;
 `;
 
 const Div = styled.div`
@@ -21,8 +21,7 @@ const Div = styled.div`
   padding-bottom: 64px;
   align-self: stretch;
   justify-content: center;
-  position: relative; /* Phaser 캔버스와 겹칠 수 있게 설정 */
-  z-index: 1; /* UI 요소가 Phaser 캔버스보다 위에 있도록 설정 */
+  /* Phaser 캔버스와 겹칠 수 있게 설정 */
 `;
 
 const SubTitle = styled.h1`
