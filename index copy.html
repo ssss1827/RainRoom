@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+      }
+      .wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+      }
+
+      .buttonWrap {
+        display: flex;
+        flex-direction: row;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <p id="num"></p>
+      <div class="buttonWrap">
+        <button id="minusBtn">-</button>
+        <button id="plusBtn">+</button>
+      </div>
+    </div>
+  </body>
+  <script>
+    let num = 0;
+
+    const target = document.getElementById("num");
+    target.innerHTML = num;
+
+    document.getElementById("plusBtn").onclick = function () {
+      num++;
+      target.innerHTML = num;
+    };
+
+    document.getElementById("minusBtn").onclick = function () {
+      num--;
+      target.innerHTML = num;
+    };
+  </script>
+</html>
