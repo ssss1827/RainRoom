@@ -1,6 +1,12 @@
 import { createGlobalStyle } from "styled-components";
 
 const GlobalStyles = createGlobalStyle`
+  /* 모든 곳에 적용시켜 주겠다. */
+  *{ 
+    box-sizing: border-box;
+  }
+  
+  
   /* 글로벌 폰트 설정 */
   @font-face {
     font-family: 'PrimaryFont';
@@ -31,7 +37,7 @@ html {
     a {
   all: unset;
   cursor: pointer;
-  box-sizing: border-box;
+
   text-decoration: none;
 }
 

@@ -2,15 +2,13 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 const TopNavBar = styled.nav`
-  position: fixed;
+  position: sticky;
   display: flex;
-  padding: 12px 24px;
+  padding: 12px 16px;
   justify-content: space-between;
   align-items: center;
   gap: 16px;
   align-self: stretch;
-
-  width: calc(100% - 40px);
 
   border-radius: 12px;
   border: 0.5px solid var(--Zinc-700, #3f3f46);
@@ -21,7 +19,7 @@ const TopNavBar = styled.nav`
   z-index: 1000; //요소 가장 최상위에 있도록 설정.
 `;
 
-const NavBtn = styled(Link)`
+const NavBtnGhost = styled(Link)`
   font-size: 14px; /* 글씨 크기 */
   color: white; /* 글씨 색상 */
   text-decoration: none; /* 밑줄 제거 */
@@ -29,6 +27,21 @@ const NavBtn = styled(Link)`
 
   &:hover {
     color: lightgray; /* hover 시 색상 변경 */
+    text-decoration: underline; /* hover 시 밑줄 */
+  }
+`;
+
+const NavBtnFilled = styled(Link)`
+  font-size: 14px; /* 글씨 크기 */
+  color: var(--grey-900, #18181b); /* 글씨 색상 */
+  text-decoration: none; /* 밑줄 제거 */
+  padding: 12px 16px;
+
+  border-radius: 8px;
+  background: var(--grey-50, #fafafa);
+
+  &:hover {
+    color: #565656; /* hover 시 색상 변경 */
     text-decoration: underline; /* hover 시 밑줄 */
   }
 `;
@@ -42,10 +55,11 @@ const Div = styled.div`
 export default function TopNavigation() {
   return (
     <TopNavBar>
-      <NavBtn to="/">RainRoom</NavBtn>
+      <NavBtnGhost to="/">RainRoom</NavBtnGhost>
       <Div>
-        <NavBtn to="/about">About</NavBtn>
-        <NavBtn to="/contact">Contact</NavBtn>
+        <NavBtnGhost to="/about">About</NavBtnGhost>
+        <NavBtnGhost to="/contact">Contact</NavBtnGhost>
+        <NavBtnFilled to="/login">Sign in</NavBtnFilled>
       </Div>
     </TopNavBar>
   );
