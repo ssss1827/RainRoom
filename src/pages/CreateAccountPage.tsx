@@ -1,79 +1,26 @@
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
-import styled from "styled-components";
-import { auth } from "../firebase";
-import { useNavigate } from "react-router-dom";
+import { auth, db } from "../firebase";
+import { Link, useNavigate } from "react-router-dom";
 import PhaserRainEffect from "../components/RainEffect";
 import { PhaserContainer } from "./LandingPage";
+import { doc, setDoc } from "firebase/firestore";
+import {
+  AuthCard,
+  AuthError,
+  AuthForm,
+  AuthInput,
+  AuthInputTitle,
+  AuthTitle,
+  AuthWrapper,
+  Switcher,
+} from "../components/AuthUIComponent";
+import { FirebaseError } from "firebase/app";
 
-const Wrapper = styled.div`
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  display: flex;
-  height: 100vh;
-`;
-
-const Card = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: auto;
-  max-width: 624px;
-  padding: 86px 56px;
-
-  border-radius: var(--416-px, 16px);
-  background: #fff;
-  gap: 36px; //gap은 flex상태에서 적용된다.
-  z-index: 999;
-  /* shadow/xl */
-  box-shadow: 0px 8px 10px -6px rgba(0, 0, 0, 0.3),
-    0px 20px 25px -5px rgba(0, 0, 0, 0.1);
-`;
-
-const Title = styled.span`
-  color: var(--grey-500, #71717a);
-
-  font-size: 24px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
-
-  text-align: center;
-`;
-
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  width: 100%;
-`;
-
-const Input = styled.input`
-  display: flex;
-  padding: 16px;
-  justify-content: center;
-  align-items: center;
-  gap: var(--28-px, 8px);
-  width: 100%;
-`;
-
-const Span = styled.span`
-  display: inline-block;
-  color: var(--grey-900, #18181b);
-
-  font-size: 14px;
-
-  font-weight: 400;
-  line-height: normal;
-  margin-bottom: 16px;
-`;
-
-const Error = styled.span`
-  font-family: "secondaryFont";
-  font-size: 14px;
-  color: red;
-  text-align: center;
-`; //Error 문자를 처리
+//firebase에서 에러문구를 가져와서 친절하게 말해줘
+/* const errors = {
+  "auth/email-already-in-use": "That email already exist",
+}; */
 
 export default function CreateAccount() {
   const navigate = useNavigate(); // 어떤 행동이 끝난 후, 사용자를 이동 시키기 위해, useNavigate 훅 사용
@@ -111,23 +58,40 @@ export default function CreateAccount() {
       return; //다음 로직이 실행되는것을 막는다.
     }
 
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters long");
+      return;
+    }
+
     //------여기서 부터 위의 조건이 충족되었을 때 실행 돼.---------
     //inform의 value를 submit하면 우선 오류확인을 함.
     try {
       //우선 실행될때 로딩 화면을 띄어
       setLoading(true);
+      setError("");
       //createUser...을 읽어보면, 해당 함수를 성공하면 자격증명을 받게돼.
+      //즉, firebase에 계정이 생성됨.
       const credentials = await createUserWithEmailAndPassword(
         auth,
         email,
         password
       );
 
-      console.log(credentials.user);
-      navigate("/"); //회원가입에 성공하면 내가
-    } catch (error) {
+      //user 정보를 가르킬 수 있는 인스턴스 주소를 알려줄게. 여기 저장하면돼.
+      const userDocRef = doc(db, "users", credentials.user.uid);
+      //해당 주소에 다음과 같은 데이터를 저장할게, 앞으로 여기업데이트 하면돼.
+      await setDoc(userDocRef, {
+        email: credentials.user.email, //사용자 이메일 저장.
+        hasCompletedProfile: false, //사용자의 프로필 정보가 완성되었는지 여부를 나타냄.
+      });
+
+      //계정 생성 후 추가 정보 입력 페이지로 이동.
+      navigate("/add-profile-nickname");
+    } catch (e) {
+      if (e instanceof FirebaseError) {
+        setError(e.message);
+      }
       //에러가 있으면 무언가를 보여줘야하기에, 에러를 상태관리 하기 위한 state가 필요.
-      setError("error!!! 계정만들기에 실패함.");
     } finally {
       setEmail("");
       setPassword("");
@@ -145,17 +109,17 @@ export default function CreateAccount() {
   //컴포넌트의 value에 상태변수를 넣어주는 이유는, 그 값이 변경될 때마다 React가 자동으로 컴포넌트를 다시 렌더링하여 UI를 업데이트 하기위함.
   //해당 상태값이, input의 현재값이 됨.
   return (
-    <Wrapper>
+    <AuthWrapper>
       <PhaserContainer>
         <PhaserRainEffect /> {/* Phaser 캔버스를 맨 아래에 렌더링 */}
       </PhaserContainer>
-      <Card>
-        <Title>welcome to RainRoom</Title>
+      <AuthCard>
+        <AuthTitle>Register an Account</AuthTitle>
         {/* Form에 onSubmit 이벤트를 줘서 폼 전체가 제출될 때 특정 동작을 실행. */}
-        <Form onSubmit={onSubmit}>
+        <AuthForm onSubmit={onSubmit}>
           <div>
-            <Span>Email</Span>
-            <Input
+            <AuthInputTitle>Email</AuthInputTitle>
+            <AuthInput
               onChange={onChange}
               value={email}
               name="email"
@@ -165,8 +129,8 @@ export default function CreateAccount() {
             />
           </div>
           <div>
-            <Span>Password</Span>
-            <Input
+            <AuthInputTitle>Password</AuthInputTitle>
+            <AuthInput
               onChange={onChange}
               value={password}
               name="password"
@@ -177,14 +141,17 @@ export default function CreateAccount() {
           </div>
 
           {/* 버튼 클릭 시 Form 제출 */}
-          <Input
+          <AuthInput
             type="submit"
             value={isLoading ? "Loading.." : "Sing in with email"}
           />
-        </Form>
+        </AuthForm>
         {/* 에러가 비어있지 않으면 Form밑에 에러표시해주겠다. */}
-        {error != "" ? <Error>{error}</Error> : null}
-      </Card>
-    </Wrapper>
+        {error != "" ? <AuthError>{error}</AuthError> : null}
+        <Switcher>
+          Already have an account? <Link to="/login">Login &rarr;</Link>
+        </Switcher>
+      </AuthCard>
+    </AuthWrapper>
   );
 }

@@ -17,7 +17,7 @@ export default function ProtectedRoute({
   const user = auth.currentUser;
 
   //만약 user가 null이 아니라면 children을 볼 수 있어야함.
-  if (user === null) {
+  if (user) {
     return <Navigate to="/login" />;
   }
 

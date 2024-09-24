@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import ProtectedRoute from "./protected-route";
 
 const TopNavBar = styled.nav`
   position: sticky;
@@ -59,6 +60,7 @@ export default function TopNavigation() {
       <Div>
         <NavBtnGhost to="/about">About</NavBtnGhost>
         <NavBtnGhost to="/contact">Contact</NavBtnGhost>
+
         <NavBtnFilled to="/login">Sign in</NavBtnFilled>
       </Div>
     </TopNavBar>
