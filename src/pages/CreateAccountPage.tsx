@@ -1,5 +1,10 @@
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 import styled from "styled-components";
+import { auth } from "../firebase";
+import { useNavigate } from "react-router-dom";
+import PhaserRainEffect from "../components/RainEffect";
+import { PhaserContainer } from "./LandingPage";
 
 const Wrapper = styled.div`
   flex-direction: column;
@@ -18,8 +23,8 @@ const Card = styled.div`
 
   border-radius: var(--416-px, 16px);
   background: #fff;
-  gap: 36px;
-
+  gap: 36px; //gap은 flex상태에서 적용된다.
+  z-index: 999;
   /* shadow/xl */
   box-shadow: 0px 8px 10px -6px rgba(0, 0, 0, 0.3),
     0px 20px 25px -5px rgba(0, 0, 0, 0.1);
@@ -67,9 +72,12 @@ const Error = styled.span`
   font-family: "secondaryFont";
   font-size: 14px;
   color: red;
+  text-align: center;
 `; //Error 문자를 처리
 
 export default function CreateAccount() {
+  const navigate = useNavigate(); // 어떤 행동이 끝난 후, 사용자를 이동 시키기 위해, useNavigate 훅 사용
+
   //계정 생성을 시작할 때 로딩을 true로 바꿀거야. 그래서 초기값은 false
   const [isLoading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
@@ -94,15 +102,35 @@ export default function CreateAccount() {
     }
   };
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     //기본 폼 제출 동작을 막음.
     e.preventDefault();
+    //inform의 value를 submit하면 우선 오류확인을 함.
+    //onSubmit함수를 종료시킬 경우를 생각해. 로딩중이거나, email 혹은 password에 값이없으면 submit하지마.
+    if (isLoading || email === "" || password === "") {
+      return; //다음 로직이 실행되는것을 막는다.
+    }
 
-    //오류확인을 함.
+    //------여기서 부터 위의 조건이 충족되었을 때 실행 돼.---------
+    //inform의 value를 submit하면 우선 오류확인을 함.
     try {
+      //우선 실행될때 로딩 화면을 띄어
+      setLoading(true);
+      //createUser...을 읽어보면, 해당 함수를 성공하면 자격증명을 받게돼.
+      const credentials = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      console.log(credentials.user);
+      navigate("/"); //회원가입에 성공하면 내가
     } catch (error) {
       //에러가 있으면 무언가를 보여줘야하기에, 에러를 상태관리 하기 위한 state가 필요.
+      setError("error!!! 계정만들기에 실패함.");
     } finally {
+      setEmail("");
+      setPassword("");
       setLoading(false); // 오류를 다 확인하고 로딩상태를 해제하겠다.
     }
 
@@ -118,6 +146,9 @@ export default function CreateAccount() {
   //해당 상태값이, input의 현재값이 됨.
   return (
     <Wrapper>
+      <PhaserContainer>
+        <PhaserRainEffect /> {/* Phaser 캔버스를 맨 아래에 렌더링 */}
+      </PhaserContainer>
       <Card>
         <Title>welcome to RainRoom</Title>
         {/* Form에 onSubmit 이벤트를 줘서 폼 전체가 제출될 때 특정 동작을 실행. */}
@@ -151,6 +182,7 @@ export default function CreateAccount() {
             value={isLoading ? "Loading.." : "Sing in with email"}
           />
         </Form>
+        {/* 에러가 비어있지 않으면 Form밑에 에러표시해주겠다. */}
         {error != "" ? <Error>{error}</Error> : null}
       </Card>
     </Wrapper>

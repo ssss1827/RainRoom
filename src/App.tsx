@@ -10,6 +10,7 @@ import LoginPage from "./pages/LoginPage";
 import Loading from "./components/Loading";
 import { auth } from "./firebase";
 import CreateAccount from "./pages/CreateAccountPage";
+import ProtectedRoute from "./components/protected-route";
 
 // 1. router를 생성한다.
 // 2. RouterProvider로 라우터를 애플리케이션에 제공하여 URL 경로에 따라 컴포넌트가 보여지도록한다.
@@ -20,7 +21,12 @@ const router = createBrowserRouter([
     children: [
       {
         path: "",
-        element: <LandingPage />,
+        element: (
+          //ProtectRoute 컴포넌트를 이용해서 <Land...> 컴포넌트를 children 매개변수로 보내, LandingPage에서 user가 로그인했는지를 확인해.
+          <ProtectedRoute>
+            <LandingPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "about",

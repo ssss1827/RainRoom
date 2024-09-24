@@ -3,7 +3,7 @@ import { ReactTyped } from "react-typed";
 import styled from "styled-components";
 import PhaserRainEffect from "../components/RainEffect";
 
-const PhaserContainer = styled.div`
+export const PhaserContainer = styled.div`
   position: absolute;
   top: 0;
   left: 0;
