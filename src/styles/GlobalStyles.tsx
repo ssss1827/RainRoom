@@ -4,6 +4,7 @@ const GlobalStyles = createGlobalStyle`
   /* 모든 곳에 적용시켜 주겠다. */
   *{ 
     box-sizing: border-box;
+    line-height: 1;
   }
   
   
@@ -34,12 +35,12 @@ html {
         padding: 0;
     }
 
-    a {
+  a {
   all: unset;
   cursor: pointer;
 
   text-decoration: none;
-}
+  } 
 
     #root {
     height: 100%;  /* 모든 콘텐츠가 전체 화면을 채울 수 있게 설정 */
